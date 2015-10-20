@@ -33,10 +33,11 @@ void setup(){
 
   pinMode(l1, OUTPUT);
   pinMode(l2, OUTPUT);
-//  pinMode(l3, OUTPUT);
+  pinMode(l3, OUTPUT);
 
   pinMode(b1, INPUT);
   pinMode(b2, INPUT);
+  pinMode(b3, INPUT);
 
   Serial.begin(9600);
   Serial.println("Arduino is ready");
@@ -75,31 +76,37 @@ void loop(){
   // BUTTONS
   int b1state = digitalRead(b1);
   int b2state = digitalRead(b2);
+  int b3state = digitalRead(b3);
   if (b1state != lastStateB1 && b1state == LOW) {
     state1 = state1 == LOW ? HIGH : LOW;
   }
   if (b2state != lastStateB2 && b2state == LOW) {
     state2 = state2 == LOW ? HIGH : LOW;
   }
+  if (b3state != lastStateB3 && b3state == LOW) {
+    state3 = state3 == LOW ? HIGH : LOW;
+  }
   lastStateB1 = b1state;
   lastStateB2 = b2state;
+  lastStateB3 = b3state;
 
   // IR
   if (irrecv.decode(&results)) {
     switch (results.value) {
-      case REMOTE_BUTTON_1: state1 = state1 == LOW ? HIGH : LOW; Serial.println("on1"); break;
-      case REMOTE_BUTTON_2: state2 = state2 == LOW ? HIGH : LOW; Serial.println("on2"); break;
-//      case REMOTE_BUTTON_3: state3 = state3 == LOW ? HIGH : LOW; break;
-      case REMOTE_BUTTON_ON: state1 = HIGH; state2 = HIGH; Serial.println("onAll");  break;
-      case REMOTE_BUTTON_OFF: state1 = LOW; state2 = LOW; Serial.println("ofAll"); break;
+      case REMOTE_BUTTON_1: state1 = state1 == LOW ? HIGH : LOW; Serial.println("ir b 1"); break;
+      case REMOTE_BUTTON_2: state2 = state2 == LOW ? HIGH : LOW; Serial.println("ir b 2"); break;
+      case REMOTE_BUTTON_3: state3 = state3 == LOW ? HIGH : LOW; Serial.println("ir b 3"); break;
+      case REMOTE_BUTTON_ON: state1 = HIGH; state2 = HIGH; Serial.println("ir b all on");  break;
+      case REMOTE_BUTTON_OFF: state1 = LOW; state2 = LOW; Serial.println("ir b all off"); break;
     }
-    Serial.println(results.value);
+    //Serial.println(results.value);
     irrecv.resume();
   }
 
   // LIGHTS STATES
   digitalWrite(l1, state1);
   digitalWrite(l2, state2);
+  digitalWrite(l3, state3);
 } 
 
 void processCmd(char cmd[]) {
@@ -109,6 +116,9 @@ void processCmd(char cmd[]) {
     state1 = state1 == LOW ? HIGH : LOW;
   }
   if (strcmp(cmd, "&light2;") == 0) {
+    state2 = state2 == LOW ? HIGH : LOW;
+  }
+  if (strcmp(cmd, "&light3;") == 0) {
     state2 = state2 == LOW ? HIGH : LOW;
   }
   //for (int j = 0; j < 32; j++) { bufferBT[j] = '\0';};
